@@ -59,16 +59,23 @@ class _CalcAppState extends State<CalcApp> {
 
   void _handleEquals() {
     setState(() {
-      final a = int.tryParse(_op1) ?? 0;
-      final b = int.tryParse(_op2) ?? 0;
-
-      if (_somaApertado) {
-        final r = a + (int.tryParse(_op2.isEmpty ? '0' : _op2) ?? 0);
-        _resultado = r;
-
-        _op1 = r.toString();
+      if (_resultado != null && _op2.isEmpty && !_somaApertado) {
+        _op1 = '';
         _op2 = '';
+        _resultado = null;
         _somaApertado = false;
+      } else {
+        final a = int.tryParse(_op1) ?? 0;
+        final b = int.tryParse(_op2) ?? 0;
+
+        if (_somaApertado) {
+          final r = a + (int.tryParse(_op2.isEmpty ? '0' : _op2) ?? 0);
+          _resultado = r;
+
+          _op1 = r.toString();
+          _op2 = '';
+          _somaApertado = false;
+        }
       }
     });
     _logState();
@@ -97,18 +104,26 @@ class _CalcAppState extends State<CalcApp> {
         appBar: AppBar(title: const Text('Calculadora (+)')),
         body: Column(
           children: [
-            // 👇 Visor principal
             Container(
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.all(20.0),
               child: Text(
-                _resultado != null
-                    ? 'Resultado: $_resultado'
-                    : (_somaApertado
-                        ? '${_op1.isEmpty ? '0' : _op1} + ${_op2.isEmpty ? '' : _op2}'
-                        : (_op1.isEmpty ? '0' : _op1)),
-                style:
-                    const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                _somaApertado
+                    ? '${_op1.isEmpty ? '0' : _op1} + ${_op2.isEmpty ? '' : _op2}'
+                    : (_op1.isEmpty ? '0' : _op1),
+                style: const TextStyle(fontSize: 28),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20, bottom: 10),
+              child: Text(
+                _resultado != null ? 'Resultado: $_resultado' : '',
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
               ),
             ),
             const Divider(height: 1),
